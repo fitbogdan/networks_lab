@@ -45,9 +45,14 @@ int main(int argc, char* argv[]){
             }
         }
 
+        free(line);
+        fclose(fp);
+
         for (int i = count-1; i >= 0; i--){
             printf("%s\n" , lines[i]);
         }
+
+
     }
 
 
