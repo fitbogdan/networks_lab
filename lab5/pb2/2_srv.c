@@ -9,7 +9,7 @@
 #include "netio.h"
 
 void extract_command(FILE* fp, int chosen_number, char* command){
-
+    rewind(fp);
     ssize_t read = 0;
     char* line = NULL;
     ssize_t len = 0;
@@ -63,7 +63,7 @@ void extract_command(FILE* fp, int chosen_number, char* command){
 void run_command(char* command, int client){
     pid_t pid = fork();
 
-
+    printf("%s\n",command);
     if(pid == 0){
         dup2(client, STDOUT_FILENO);
         execl(command,command,NULL);
@@ -102,7 +102,7 @@ int main(){
         return -1;
     }
 
-    
+
     if(listen(sd,5) == -1){
         perror("[server] listen");
         return -1;

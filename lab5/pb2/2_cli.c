@@ -40,19 +40,17 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    printf("1\n");
 
     int chosen_nr_net = htonl(atoi(argv[3]));
-    if(writen(sd, chosen_nr_net, sizeof(chosen_nr_net)) == -1){
+    if(writen(sd, &chosen_nr_net, sizeof(chosen_nr_net)) == -1){
         perror("[client] write");
         return -1;
     }
 
-    printf("1\n");
     
     char buf[4096];
     ssize_t n;
-    while(( n = read(sd,buf,sizeof(buf)) > 0)){
+    while(( n = read(sd,buf,sizeof(buf))) > 0){
         fwrite(buf,1,(size_t)n, stdout);
     }
     if(n == -1){
@@ -60,7 +58,6 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    printf("1\n");
 
     close(sd);
     return 0;
