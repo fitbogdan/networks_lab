@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "netio.h"
+
 void extract_command(FILE* fp, int chosen_number, char* command){
 
     ssize_t read = 0;
@@ -91,11 +93,16 @@ int main(){
         return -1;
     }
 
-    server.sin_family = AF_INET;
-    server.sin_port = htons(2024);
+    server.sin_family = AF_INET; server.sin_port = htons(2024);
     server.sin_addr.s_addr = htonl(INADDR_ANY);
 
 
+    if (bind (sd, (struct sockaddr *) &server, sizeof (struct sockaddr)) == -1){
+        perror("[server] eroare la bind");
+        return -1;
+    }
+
+    
     if(listen(sd,5) == -1){
         perror("[server] listen");
         return -1;
@@ -117,7 +124,7 @@ int main(){
         }
 
         int key_net = 0;
-        if(read(client, &key_net, sizeof(key_net)) != sizeof(key_net)){
+        if(readn(client, &key_net, sizeof(key_net)) != sizeof(key_net)){
             perror("[server] Eroare la read");
             close(client);
             continue;
@@ -131,9 +138,12 @@ int main(){
 
         run_command(command,client);
 
+        close(client);
+
+
     }
 
-
+    close(sd);
 
     // pid_t pid = fork();
     // if(pid == 0){ // Child
