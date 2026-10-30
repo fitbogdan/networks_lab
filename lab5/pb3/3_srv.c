@@ -4,6 +4,8 @@
 #include<sys/socket.h>
 #include "netio.h"
 #include <string.h>
+#include <pwd.h>
+
 
 #define PORT 2024
 
@@ -64,6 +66,7 @@ int main(){
     while(1){
         int len = sizeof(from);
         int client = accept(sd, (struct sockaddr *)&from, &len);
+        int logged = 0;
 
         if(client == -1){
             perror("[server] Bad connection");
@@ -81,7 +84,7 @@ int main(){
         char* cmd = strtok(line, " \t");
         char* arg = strtok(NULL, " \t");
 
-        if(cmd == 0){
+        if(cmd == NULL){
             char* msg = "Your command was not recieved, its null";
             unsigned int len = strlen(msg);
             send_message(client,msg,len);
@@ -95,7 +98,19 @@ int main(){
             continue;
         }
         else if(strcmp(cmd, "login") == 0){
-            
+            if(arg != NULL && getpwnam(arg) != NULL){
+                logged = 1;
+                char* msg = "Welcome! You are logged in.";
+                send_message(client,msg,strlen(msg));
+            }
+            else if(arg == NULL){
+                char* msg = "Error, provide a username";
+                send_message(client,msg,strlen(msg));
+            }
+            else if(getpwnam(arg) == NULL){
+                char* msg = "Error, invalid username";
+                send_message(client,msg,strlen(msg));
+            }
         }
     }
 
