@@ -3,8 +3,19 @@
 #include <netinet/in.h>
 #include<sys/socket.h>
 #include "netio.h"
+#include <string.h>
 
 #define PORT 2024
+
+int send_message(int fd, void* data, unsigned int len){
+    unsigned int ln = htonl(len);
+    if(writen(fd,&ln,sizeof(ln)) == -1){
+        perror("[server] Eroare la write");
+        return -1;
+    }
+
+    return writen(fd,data,len);
+}
 
 int main(){
 
@@ -70,17 +81,12 @@ int main(){
         if(strcmp(cmd, "quit") == 0){
             char* msg = "Ok bye";
             unsigned int before = strlen(msg);
-            
-
-            if(writen(client,&before,sizeof(before)) == -1){
-                perror("[server] Eroare la write");
-                return -1;
-            }
+            send_message(client,msg,strlen(msg));
+            continue;
         }
     }
 
 
-
-
+    return 0;
 
 }
