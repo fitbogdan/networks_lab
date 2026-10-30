@@ -29,6 +29,9 @@ int main(){
         perror("[server] Socket");
         return -1;
     }
+
+    int on = 1;
+    setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof on);
     
     //Configure server:
 
@@ -78,11 +81,21 @@ int main(){
         char* cmd = strtok(line, " \t");
         char* arg = strtok(NULL, " \t");
 
-        if(strcmp(cmd, "quit") == 0){
-            char* msg = "Ok bye";
-            unsigned int before = strlen(msg);
-            send_message(client,msg,strlen(msg));
+        if(cmd == 0){
+            char* msg = "Your command was not recieved, its null";
+            unsigned int len = strlen(msg);
+            send_message(client,msg,len);
+            close(client);
             continue;
+        }
+        else if(strcmp(cmd, "quit") == 0){
+            char* msg = "Ok bye";
+            send_message(client,msg,strlen(msg));
+            close(client);
+            continue;
+        }
+        else if(strcmp(cmd, "login") == 0){
+            
         }
     }
 
